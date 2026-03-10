@@ -1,0 +1,61 @@
+{
+  "rentals": [
+    {
+      "id": "RNT-0001",
+      "receiptNumber": "A5-20260310-001",
+      "createdAt": "2026-03-10T09:12:00Z",
+      "employee": { "id": "EMP-01", "name": "Alice Gomez" },
+      "customer": { "name": "John Doe", "passportNumber": "X1234567" },
+      "vehicle": { "brand": "Toyota", "model": "Corolla", "category": "Economy", "licensePlate": "ABC-1234", "plateOCRConfidence": 0.96 },
+      "hotel": { "name": "Seaside Hotel", "room": "502" },
+      "pickupDate": "2026-03-10",
+      "returnDate": "2026-03-13",
+      "pricePerDay": 25.0,
+      "days": 3,
+      "subtotal": 75.0,
+      "vatRate": 0.12,
+      "vatAmount": 9.0,
+      "total": 84.0,
+      "paymentMethod": "Card",
+      "status": "Completed"
+    },
+    {
+      "id": "RNT-0002",
+      "receiptNumber": "A5-20260310-002",
+      "createdAt": "2026-03-10T10:05:00Z",
+      "employee": { "id": "EMP-02", "name": "Mohamed Ali" },
+      "customer": { "name": "Sara Müller", "passportNumber": "D9876543" },
+      "vehicle": { "brand": "BMW", "model": "5 Series", "category": "Luxury", "licensePlate": "XYZ-987", "plateOCRConfidence": 0.89 },
+      "hotel": { "name": "Grand Plaza", "room": "110" },
+      "pickupDate": "2026-03-10",
+      "returnDate": "2026-03-12",
+      "pricePerDay": 120.0,
+      "days": 2,
+      "subtotal": 240.0,
+      "vatRate": 0.2,
+      "vatAmount": 48.0,
+      "total": 288.0,
+      "paymentMethod": "Cash",
+      "status": "Active"
+    },
+    {
+      "id": "RNT-0003",
+      "receiptNumber": "A5-20260310-003",
+      "createdAt": "2026-03-10T11:30:00Z",
+      "employee": { "id": "EMP-01", "name": "Alice Gomez" },
+      "customer": { "name": "Luis Fernandes", "passportNumber": "P5558821" },
+      "vehicle": { "brand": "Renault", "model": "Captur", "category": "Standard", "licensePlate": "LMN-4567", "plateOCRConfidence": 0.94 },
+      "hotel": { "name": "City Inn", "room": "33B" },
+      "pickupDate": "2026-03-10",
+      "returnDate": "2026-03-11",
+      "pricePerDay": 40.0,
+      "days": 1,
+      "subtotal": 40.0,
+      "vatRate": 0.12,
+      "vatAmount": 4.8,
+      "total": 44.8,
+      "paymentMethod": "Card",
+      "status": "Completed"
+    }
+  ]
+}

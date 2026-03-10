@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="theme-color" content="#00f0ff"/>
+  <meta name="description" content="Aarias Car Rental Management System — Fleet scheduling, OCR plates, A5 receipts, earnings tracking."/>
+  <meta property="og:title" content="Aarias Car Rental Management"/>
+  <meta property="og:description" content="Professional car rental management with OCR, scheduling, and real-time earnings."/>
+  <meta property="og:type" content="website"/>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+  <title>Aarias Car Rental Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<div class="mesh-bg"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <img src="logo.svg" alt="Aarias" class="nav-logo"/>
+  </div>
+  <ul class="nav-links">
+    <li class="nav-item active" data-tab="dashboard"><span class="material-icons-round">dashboard</span><span>Dashboard</span></li>
+    <li class="nav-item" data-tab="new-rental"><span class="material-icons-round">add_circle</span><span>New Rental</span></li>
+    <li class="nav-item" data-tab="schedule"><span class="material-icons-round">calendar_month</span><span>Schedule</span></li>
+    <li class="nav-item" data-tab="earnings"><span class="material-icons-round">trending_up</span><span>Earnings</span></li>
+    <li class="nav-item" data-tab="fleet"><span class="material-icons-round">directions_car</span><span>Fleet</span></li>
+    <li class="nav-item" data-tab="booking-link"><span class="material-icons-round">link</span><span>Booking Links</span></li>
+    <li class="nav-item" data-tab="coming-soon"><span class="material-icons-round">bolt</span><span>AI &amp; Sync</span></li>
+  </ul>
+  <div class="sidebar-footer">
+    <div class="agent-badge">
+      <span class="material-icons-round">support_agent</span>
+      <div><div class="agent-name">Alice Gomez</div><div class="agent-role">Rental Agent</div></div>
+    </div>
+  </div>
+</nav>
+
+<header class="mobile-header">
+  <button class="menu-btn" id="menuBtn"><span class="material-icons-round">menu</span></button>
+  <img src="logo.svg" alt="Aarias" class="nav-logo-mobile"/>
+</header>
+
+<div class="page-wrap">
+
+  <!-- DASHBOARD -->
+  <section class="tab-panel active" id="tab-dashboard">
+    <div class="page-header glass-card anim-fadein">
+      <div>
+        <h2>Good&nbsp;morning, Alice! 🚀</h2>
+        <p class="muted">Here's what's happening today — <span id="todayDate"></span></p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-pill" onclick="switchTab('new-rental')"><span class="material-icons-round">add</span> New Rental</button>
+      </div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi glass-card anim-fadein" style="--d:.05s">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,#00f0ff,#7b61ff)"><span class="material-icons-round">payments</span></div>
+        <div><div class="kpi-val" id="kpiRevenue">$0</div><div class="kpi-label">Today's Revenue</div></div>
+      </div>
+      <div class="kpi glass-card anim-fadein" style="--d:.1s">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,#39ff14,#00c9a7)"><span class="material-icons-round">directions_car</span></div>
+        <div><div class="kpi-val" id="kpiActive">0</div><div class="kpi-label">Active Rentals</div></div>
+      </div>
+      <div class="kpi glass-card anim-fadein" style="--d:.15s">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,#ffc800,#ffaa00)"><span class="material-icons-round">event_available</span></div>
+        <div><div class="kpi-val" id="kpiAvail">0</div><div class="kpi-label">Cars Available</div></div>
+      </div>
+      <div class="kpi glass-card anim-fadein" style="--d:.2s">
+        <div class="kpi-icon" style="background:linear-gradient(135deg,#ff00ea,#ff6b9d)"><span class="material-icons-round">warning</span></div>
+        <div><div class="kpi-val" id="kpiOverdue">0</div><div class="kpi-label">Overdue</div></div>
+      </div>
+    </div>
+    <div class="glass-card mt-20 anim-fadein" style="--d:.25s">
+      <div class="card-head"><h3>Recent Rentals</h3><button class="btn-ghost-sm" onclick="switchTab('schedule')">View Schedule →</button></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Receipt</th><th>Customer</th><th>Plate</th><th>Category</th><th>Days</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody id="recentBody"><tr><td colspan="7" class="empty-msg">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="hero-banner glass-card mt-20 anim-fadein" style="--d:.3s">
+      <div class="hero-banner-text">
+        <h3>Fast rentals. Clean receipts. Happy customers.</h3>
+        <p>Capture plates with OCR · Auto-calculate VAT · Print A5 receipts · Track every dollar</p>
+      </div>
+      <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&q=80" alt="fleet" class="hero-car-img"/>
+    </div>
+    <div class="features-strip mt-20">
+      <div class="feature-pill glass-card anim-fadein" style="--d:.35s"><span class="material-icons-round">block</span><strong>Double-Booking Guard</strong><span class="pill-badge green">Active</span></div>
+      <div class="feature-pill glass-card anim-fadein" style="--d:.4s"><span class="material-icons-round">smart_toy</span><strong>AI Automation</strong><span class="pill-badge orange">Soon</span></div>
+      <div class="feature-pill glass-card anim-fadein" style="--d:.45s"><span class="material-icons-round">sync</span><strong>App Sync</strong><span class="pill-badge orange">Soon</span></div>
+      <div class="feature-pill glass-card anim-fadein" style="--d:.5s"><span class="material-icons-round">notifications</span><strong>Alerts</strong><span class="pill-badge orange">Soon</span></div>
+      <div class="feature-pill glass-card anim-fadein" style="--d:.55s"><span class="material-icons-round">two_wheeler</span><strong>Multi-Asset</strong><span class="pill-badge purple">Bikes &amp; Vans</span></div>
+    </div>
+  </section>
+
+  <!-- NEW RENTAL -->
+  <section class="tab-panel" id="tab-new-rental">
+    <div class="page-header glass-card"><h2><span class="material-icons-round">add_circle</span>&nbsp;Create New Rental</h2></div>
+    <div class="two-col">
+      <div class="glass-card form-panel">
+        <h3>Capture License Plate</h3>
+        <div class="camera-box">
+          <video id="video" autoplay playsinline></video>
+          <canvas id="captureCanvas" style="display:none"></canvas>
+          <img id="preview" alt="plate preview"/>
+          <div class="camera-controls">
+            <button class="btn-icon-cam" id="openCamera" title="Open Camera"><span class="material-icons-round">videocam</span> Camera</button>
+            <button class="btn-icon-cam" id="captureBtn" title="Capture"><span class="material-icons-round">photo_camera</span> Capture</button>
+            <button class="btn-icon-cam" id="doOcrBtn" title="Run OCR"><span class="material-icons-round">document_scanner</span> OCR</button>
+          </div>
+          <div id="ocrStatus" class="ocr-status"></div>
+        </div>
+
+        <h3 style="margin-top:22px">Rental Details</h3>
+        <div class="form-grid2">
+          <label>License Plate<div class="iw"><span class="material-icons-round">pin</span><input id="licensePlate" placeholder="ABC-1234"/></div></label>
+          <label>Customer Name<div class="iw"><span class="material-icons-round">person</span><input id="customerName" placeholder="John Doe"/></div></label>
+          <label>Passport / ID<div class="iw"><span class="material-icons-round">badge</span><input id="passportNumber" placeholder="X1234567"/></div></label>
+          <label>Hotel (optional)<div class="iw"><span class="material-icons-round">hotel</span><input id="hotelName" placeholder="Seaside Hotel"/></div></label>
+          <label>Room<div class="iw"><span class="material-icons-round">meeting_room</span><input id="roomNumber" placeholder="502"/></div></label>
+          <label>Category<div class="iw"><span class="material-icons-round">category</span><select id="categorySelect"></select></div></label>
+          <label>Price / Day ($)<div class="iw"><span class="material-icons-round">attach_money</span><input id="pricePerDay" type="number" step="0.01" value="25"/></div></label>
+          <label>Days<div class="iw"><span class="material-icons-round">calendar_today</span><input id="days" type="number" value="1" min="1"/></div></label>
+          <label>Pickup Date<div class="iw"><span class="material-icons-round">event</span><input id="pickupDate" type="date"/></div></label>
+          <label>Return Date<div class="iw"><span class="material-icons-round">event_busy</span><input id="returnDate" type="date"/></div></label>
+          <label>Payment Method<div class="iw"><span class="material-icons-round">credit_card</span><select id="paymentMethod"><option>Card</option><option>Cash</option></select></div></label>
+        </div>
+
+        <div id="conflictAlert" class="conflict-alert" style="display:none"><span class="material-icons-round">warning</span><span id="conflictMsg">Conflict!</span></div>
+        <div class="form-actions-bar">
+          <button class="btn-pill-ghost" id="generatePdf"><span class="material-icons-round">picture_as_pdf</span> A5 PDF</button>
+          <button class="btn-pill" id="saveRental"><span class="material-icons-round">save</span> Save Rental</button>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="glass-card totals-panel">
+          <h3>Estimated Cost</h3>
+          <div class="totals-list">
+            <div class="totals-row"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
+            <div class="totals-row"><span>VAT</span><strong id="vatAmount">$0.00</strong></div>
+            <div class="totals-row total-row"><span>Total</span><strong id="total">$0.00</strong></div>
+          </div>
+        </div>
+        <div class="glass-card">
+          <h3>Receipt Preview</h3>
+          <div id="receipt" class="receipt a5">
+            <div class="receipt-header">
+              <div class="receipt-logo">Aarias Car Rental</div>
+              <div id="receiptMeta" class="receipt-meta">Fill the form to preview</div>
+            </div>
+            <div id="receiptBody" class="receipt-body"></div>
+            <div class="receipt-footer">Thank you for renting with Aarias!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHEDULE -->
+  <section class="tab-panel" id="tab-schedule">
+    <div class="page-header glass-card"><h2><span class="material-icons-round">calendar_month</span>&nbsp;Visual Schedule</h2><p class="muted">Booked, available, or overdue — at a glance. Conflicts are blocked automatically.</p></div>
+    <div class="glass-card mt-20">
+      <div class="schedule-legend">
+        <span class="dot booked"></span>Booked &nbsp;
+        <span class="dot available"></span>Available &nbsp;
+        <span class="dot overdue"></span>Overdue &nbsp;
+        <span class="dot conflict"></span>Conflict
+      </div>
+      <div id="scheduleGrid" class="schedule-grid"></div>
+    </div>
+  </section>
+
+  <!-- EARNINGS -->
+  <section class="tab-panel" id="tab-earnings">
+    <div class="page-header glass-card"><h2><span class="material-icons-round">trending_up</span>&nbsp;Earnings &amp; Payments</h2></div>
+    <div class="kpi-grid">
+      <div class="kpi glass-card"><div class="kpi-icon" style="background:linear-gradient(135deg,#00f0ff,#7b61ff)"><span class="material-icons-round">account_balance_wallet</span></div><div><div class="kpi-val" id="earningsMonthly">$0</div><div class="kpi-label">This Month</div></div></div>
+      <div class="kpi glass-card"><div class="kpi-icon" style="background:linear-gradient(135deg,#39ff14,#00c9a7)"><span class="material-icons-round">receipt_long</span></div><div><div class="kpi-val" id="earningsRentals">0</div><div class="kpi-label">Total Rentals</div></div></div>
+      <div class="kpi glass-card"><div class="kpi-icon" style="background:linear-gradient(135deg,#ffc800,#ffaa00)"><span class="material-icons-round">supervisor_account</span></div><div><div class="kpi-val" id="earningsCommission">$0</div><div class="kpi-label">Agent Commission</div></div></div>
+    </div>
+    <div class="glass-card mt-20"><h3>Monthly Revenue</h3><canvas id="earningsChart" height="200"></canvas></div>
+    <div class="glass-card mt-20">
+      <div class="card-head"><h3>Customer Ledger</h3></div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Customer</th><th>Plate</th><th>Date</th><th>Days</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody id="ledgerBody"><tr><td colspan="6" class="empty-msg">Loading…</td></tr></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLEET -->
+  <section class="tab-panel" id="tab-fleet">
+    <div class="page-header glass-card"><h2><span class="material-icons-round">directions_car</span>&nbsp;Fleet</h2><p class="muted">Cars, motorbikes, vans, and service rentals — all tracked here.</p></div>
+    <div class="fleet-grid" id="fleetGrid"></div>
+  </section>
+
+  <!-- BOOKING LINKS -->
+  <section class="tab-panel" id="tab-booking-link">
+    <div class="page-header glass-card"><h2><span class="material-icons-round">link</span>&nbsp;Booking Links</h2><p class="muted">Share direct links with loyal clients.</p></div>
+    <div class="two-col-equal">
+      <div class="glass-card booking-link-card">
+        <div class="booking-hero-icon"><span class="material-icons-round">qr_code_2</span></div>
+        <h3>Your Booking Page</h3>
+        <div class="booking-url-box">
+          <input id="bookingUrl" readonly value=""/>
+          <button class="btn-icon-sm" id="copyLinkBtn" title="Copy"><span class="material-icons-round">content_copy</span></button>
+        </div>
+        <p class="muted small">Share this with clients so they can request a rental directly from you.</p>
+        <div class="qr-placeholder">QR Code (production feature)</div>
+        <div class="social-row">
+          <button class="btn-social" onclick="showToast('WhatsApp share — production feature')"><span class="material-icons-round">chat</span> WhatsApp</button>
+          <button class="btn-social" onclick="showToast('Email share — production feature')"><span class="material-icons-round">email</span> Email</button>
+        </div>
+      </div>
+      <div class="glass-card"><h3>Loyal Clients</h3><div id="loyalList" class="loyal-list"></div></div>
+    </div>
+  </section>
+
+  <!-- COMING SOON -->
+  <section class="tab-panel" id="tab-coming-soon">
+    <div class="page-header glass-card"><h2><span class="material-icons-round">bolt</span>&nbsp;AI Automation &amp; Sync</h2></div>
+    <div class="coming-grid">
+      <div class="glass-card coming-card"><span class="material-icons-round cs-icon">smart_toy</span><h3>AI Automation</h3><p>Auto check-in/check-out, availability checks, and reminders. Rolling out once more users join!</p><span class="pill-badge orange">Coming Soon</span></div>
+      <div class="glass-card coming-card"><span class="material-icons-round cs-icon">sync</span><h3>App Sync (Turo etc.)</h3><p>Sync bookings with Turo and other rental platforms to prevent cross-app double bookings.</p><span class="pill-badge orange">Coming Soon</span></div>
+      <div class="glass-card coming-card"><span class="material-icons-round cs-icon">notifications_active</span><h3>Reminders &amp; Alerts</h3><p>Push/email notifications for pickups, drop-offs, and maintenance schedules.</p><span class="pill-badge orange">Coming Soon</span></div>
+    </div>
+  </section>
+
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="https://unpkg.com/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
