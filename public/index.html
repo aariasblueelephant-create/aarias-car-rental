@@ -59,6 +59,7 @@
       </div>
       <div class="header-actions">
         <button class="btn-pill" onclick="switchTab('new-rental')"><span class="material-icons-round">add</span> New Rental</button>
+        <button class="btn-pill-ghost" id="openHeatmapBtn"><span class="material-icons-round">map</span> View Heatmap</button>
       </div>
     </div>
     <div class="kpi-grid">
@@ -253,8 +254,19 @@
   </section>
 
 </div>
+    <!-- FULLSCREEN MAP OVERLAY -->
+    <div id="mapOverlay" class="map-overlay" aria-hidden="true">
+      <div class="map-overlay-inner">
+        <button id="closeMapOverlay" class="map-close"><span class="material-icons-round">close</span></button>
+        <div id="mapFull"></div>
+        <div id="mapOverlayControls" style="position:absolute; top:12px; right:12px; z-index:5000; display:flex; gap:8px;">
+          <label class="map-toggle"><input type="checkbox" id="heatToggleFull" checked/> Heatmap</label>
+          <label class="map-toggle"><input type="checkbox" id="clusterToggleFull" checked/> Clusters</label>
+        </div>
+      </div>
+    </div>
 
-<div id="toast" class="toast"></div>
+    <div id="toast" class="toast"></div>
 <script src="https://unpkg.com/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

@@ -445,6 +445,67 @@
     if (q('clusterToggle') && q('clusterToggle').checked) markersGroup.addTo(mapObj);
   }
 
+  /* ===== FULLSCREEN MAP OVERLAY ===== */
+  let mapFullInitialized = false;
+  let mapFullObj = null;
+  let markersGroupFull = null;
+  let heatLayerFull = null;
+
+  function openMapOverlay() {
+    const overlay = q('mapOverlay');
+    if (!overlay) return;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    // sync toggles from embedded map if present
+    const heat = q('heatToggle'); const cluster = q('clusterToggle');
+    const heatF = q('heatToggleFull'); const clusterF = q('clusterToggleFull');
+    if (heat && heatF) heatF.checked = heat.checked;
+    if (cluster && clusterF) clusterF.checked = cluster.checked;
+    if (!mapFullInitialized) initMapFull(); else { updateFullMapData(); setTimeout(()=>mapFullObj.invalidateSize(), 200); }
+  }
+
+  function closeMapOverlay() {
+    const overlay = q('mapOverlay'); if (!overlay) return;
+    overlay.classList.remove('open'); overlay.setAttribute('aria-hidden', 'true'); document.body.style.overflow = '';
+  }
+
+  function initMapFull() {
+    if (typeof L === 'undefined') { console.warn('Leaflet not loaded for full map'); return; }
+    mapFullObj = L.map('mapFull', { preferCanvas: true }).setView([37.7749, -122.4194], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(mapFullObj);
+    markersGroupFull = L.markerClusterGroup();
+    heatLayerFull = L.heatLayer([], { radius: 30, blur: 25, maxZoom: 17, gradient: {0.4:'#00f0ff',0.65:'#ff00ea',1:'#ffc800'} });
+    mapFullInitialized = true;
+
+    const heatToggleFull = q('heatToggleFull');
+    const clusterToggleFull = q('clusterToggleFull');
+    if (heatToggleFull) heatToggleFull.addEventListener('change', () => { if (heatToggleFull.checked) heatLayerFull.addTo(mapFullObj); else mapFullObj.removeLayer(heatLayerFull); });
+    if (clusterToggleFull) clusterToggleFull.addEventListener('change', () => { if (clusterToggleFull.checked) markersGroupFull.addTo(mapFullObj); else mapFullObj.removeLayer(markersGroupFull); });
+
+    updateFullMapData();
+    setTimeout(()=>mapFullObj.invalidateSize(), 250);
+  }
+
+  function updateFullMapData() {
+    if (!mapFullInitialized) return;
+    markersGroupFull.clearLayers();
+    const heatPoints = [];
+    allRentals.forEach(r => {
+      const [lat, lng] = getCoordsForRental(r);
+      const intensity = Math.min(1, (r.total || 1) / 200);
+      heatPoints.push([lat, lng, intensity]);
+      const name = (r.customer_name || '').split(' ')[0] || 'Guest';
+      const popup = `<strong>${escapeHtml(name)}</strong><br/>${escapeHtml(r.category||'')} · <code>${escapeHtml(r.license_plate||'')}</code><br/>${(r.pickup_date||'').slice(0,10)}`;
+      const m = L.marker([lat, lng]);
+      m.bindPopup(popup);
+      markersGroupFull.addLayer(m);
+    });
+    heatLayerFull.setLatLngs(heatPoints);
+    if (q('heatToggleFull') && q('heatToggleFull').checked) heatLayerFull.addTo(mapFullObj);
+    if (q('clusterToggleFull') && q('clusterToggleFull').checked) markersGroupFull.addTo(mapFullObj);
+  }
+
   /* ===== BOOKING LINKS ===== */
   function renderBookingLinks() {
     // Build a shareable booking URL that's correct for local dev and GitHub Pages
@@ -511,4 +572,8 @@
   renderBookingLinks();
   renderSchedule();
   updateTotals();
+  // Wire overlay open/close
+  const openBtn = q('openHeatmapBtn'); if (openBtn) openBtn.addEventListener('click', openMapOverlay);
+  const closeBtn = q('closeMapOverlay'); if (closeBtn) closeBtn.addEventListener('click', closeMapOverlay);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && q('mapOverlay') && q('mapOverlay').classList.contains('open')) closeMapOverlay(); });
 })();
