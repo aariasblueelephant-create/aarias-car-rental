@@ -12,6 +12,9 @@
   <title>Aarias Car Rental Management System</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
@@ -26,6 +29,7 @@
     <li class="nav-item active" data-tab="dashboard"><span class="material-icons-round">dashboard</span><span>Dashboard</span></li>
     <li class="nav-item" data-tab="new-rental"><span class="material-icons-round">add_circle</span><span>New Rental</span></li>
     <li class="nav-item" data-tab="schedule"><span class="material-icons-round">calendar_month</span><span>Schedule</span></li>
+    <li class="nav-item" data-tab="map"><span class="material-icons-round">map</span><span>Map</span></li>
     <li class="nav-item" data-tab="earnings"><span class="material-icons-round">trending_up</span><span>Earnings</span></li>
     <li class="nav-item" data-tab="fleet"><span class="material-icons-round">directions_car</span><span>Fleet</span></li>
     <li class="nav-item" data-tab="booking-link"><span class="material-icons-round">link</span><span>Booking Links</span></li>
@@ -179,6 +183,20 @@
   </section>
 
   <!-- EARNINGS -->
+  
+  <!-- MAP -->
+  <section class="tab-panel" id="tab-map">
+    <div class="page-header glass-card"><h2><span class="material-icons-round">map</span>&nbsp;Live Map</h2><p class="muted">Heatmap of pickups and cluster playback across the Bay Area.</p></div>
+    <div class="glass-card mt-20" style="position:relative;">
+      <div id="mapControls" style="position:absolute; top:12px; right:12px; z-index:4500; display:flex; gap:8px; align-items:center;">
+        <label class="map-toggle"><input type="checkbox" id="heatToggle" checked/> Heatmap</label>
+        <label class="map-toggle"><input type="checkbox" id="clusterToggle" checked/> Clusters</label>
+      </div>
+      <div id="map" style="height:560px; border-radius:12px; overflow:hidden;"></div>
+      <div class="muted small" style="margin-top:10px">Tip: Toggle layers and zoom to explore hotspots.</div>
+    </div>
+  </section>
+
   <section class="tab-panel" id="tab-earnings">
     <div class="page-header glass-card"><h2><span class="material-icons-round">trending_up</span>&nbsp;Earnings &amp; Payments</h2></div>
     <div class="kpi-grid">
@@ -241,6 +259,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

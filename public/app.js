@@ -58,6 +58,7 @@
     if (window.innerWidth < 768) q('sidebar').classList.remove('open');
     if (id === 'earnings') renderEarningsChart();
     if (id === 'schedule') renderSchedule();
+    if (id === 'map') renderMap();
   }
   window.switchTab = switchTab;
 
@@ -263,6 +264,7 @@
       renderRecentTable();
       renderLedger();
       renderBookingLinks();
+      renderMap();
     } catch (e) { console.error(e); }
   }
 
@@ -379,6 +381,68 @@
           </div>
         </div>`;
     }).join('');
+  }
+
+  /* ===== MAP: Leaflet Heatmap + Clusters (Bay Area) ===== */
+  let mapInitialized = false;
+  let mapObj = null;
+  let markersGroup = null;
+  let heatLayer = null;
+
+  function escapeHtml(s) {
+    return String(s||'').replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]; });
+  }
+
+  function hashCode(str) {
+    let h = 0; for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; } return h;
+  }
+
+  function getCoordsForRental(r) {
+    const baseLat = 37.7749; // San Francisco / Bay Area center
+    const baseLng = -122.4194;
+    const key = (r.license_plate || r.receipt_number || r.customer_name || '') + '';
+    const h = Math.abs(hashCode(key || String(Math.random())));
+    const rnd1 = (h % 10000) / 10000;
+    const rnd2 = ((h >> 8) % 10000) / 10000;
+    const lat = baseLat + (rnd1 - 0.5) * 0.18; // ~±0.09° (~10km)
+    const lng = baseLng + (rnd2 - 0.5) * 0.3;  // ~±0.15°
+    return [lat, lng];
+  }
+
+  function renderMap() {
+    if (typeof L === 'undefined') { console.warn('Leaflet not loaded yet.'); return; }
+    if (!mapInitialized) {
+      mapObj = L.map('map', { preferCanvas: true }).setView([37.7749, -122.4194], 11);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(mapObj);
+      markersGroup = L.markerClusterGroup();
+      heatLayer = L.heatLayer([], { radius: 25, blur: 18, maxZoom: 17, gradient: {0.4: '#00f0ff', 0.65: '#ff00ea', 1: '#ffc800'} });
+      mapInitialized = true;
+
+      const heatToggle = q('heatToggle');
+      const clusterToggle = q('clusterToggle');
+      if (heatToggle) heatToggle.addEventListener('change', () => { if (heatToggle.checked) heatLayer.addTo(mapObj); else mapObj.removeLayer(heatLayer); });
+      if (clusterToggle) clusterToggle.addEventListener('change', () => { if (clusterToggle.checked) markersGroup.addTo(mapObj); else mapObj.removeLayer(markersGroup); });
+    }
+    updateMapData();
+  }
+
+  function updateMapData() {
+    if (!mapInitialized) return;
+    markersGroup.clearLayers();
+    const heatPoints = [];
+    allRentals.forEach(r => {
+      const [lat, lng] = getCoordsForRental(r);
+      const intensity = Math.min(1, (r.total || 1) / 200);
+      heatPoints.push([lat, lng, intensity]);
+      const name = (r.customer_name || '').split(' ')[0] || 'Guest';
+      const popup = `<strong>${escapeHtml(name)}</strong><br/>${escapeHtml(r.category||'')} · <code>${escapeHtml(r.license_plate||'')}</code><br/>${(r.pickup_date||'').slice(0,10)}`;
+      const m = L.marker([lat, lng]);
+      m.bindPopup(popup);
+      markersGroup.addLayer(m);
+    });
+    heatLayer.setLatLngs(heatPoints);
+    if (q('heatToggle') && q('heatToggle').checked) heatLayer.addTo(mapObj);
+    if (q('clusterToggle') && q('clusterToggle').checked) markersGroup.addTo(mapObj);
   }
 
   /* ===== BOOKING LINKS ===== */
