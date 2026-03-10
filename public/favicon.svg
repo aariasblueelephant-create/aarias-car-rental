@@ -5,16 +5,24 @@
       <stop offset="50%" stop-color="#7b61ff"/>
       <stop offset="100%" stop-color="#ff00ea"/>
     </linearGradient>
-    <filter id="glow"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
   <rect width="64" height="64" rx="14" fill="#0a0a1a"/>
   <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="url(#fg)" stroke-width="1.5" opacity="0.6"/>
-  <!-- Stylised A with car-roof crossbar -->
-  <g filter="url(#glow)" transform="translate(12,8)">
-    <polygon points="20,44 10,44 23,4 27,4" fill="url(#fg)"/>
-    <polygon points="30,44 40,44 27,4 23,4" fill="url(#fg)"/>
-    <path d="M16 30 Q20 25 25 25 Q30 25 34 30 L32 33 Q29 29 25 29 Q21 29 18 33 Z" fill="#0a0a1a"/>
-    <circle cx="16" cy="44" r="3" fill="#0a0a1a" stroke="#00f0ff" stroke-width="1.2"/>
-    <circle cx="34" cy="44" r="3" fill="#0a0a1a" stroke="#ff00ea" stroke-width="1.2"/>
+  <!-- Car key — tilted 45° for dynamic look -->
+  <g filter="url(#glow)" transform="translate(32,32) rotate(-45) translate(-16,-24)">
+    <!-- Bow (handle ring) -->
+    <rect x="4" y="2" width="24" height="20" rx="7" fill="none" stroke="url(#fg)" stroke-width="3.2"/>
+    <!-- Keyhole -->
+    <circle cx="16" cy="10" r="3" fill="url(#fg)" opacity="0.8"/>
+    <rect x="14.5" y="12" width="3" height="5" rx="0.8" fill="url(#fg)" opacity="0.8"/>
+    <!-- Shaft -->
+    <line x1="16" y1="22" x2="16" y2="46" stroke="url(#fg)" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- Teeth -->
+    <line x1="16" y1="34" x2="23" y2="34" stroke="url(#fg)" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="23" y1="34" x2="23" y2="38" stroke="url(#fg)" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="23" y1="38" x2="16" y2="38" stroke="url(#fg)" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="16" y1="42" x2="21" y2="42" stroke="url(#fg)" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="21" y1="42" x2="21" y2="46" stroke="url(#fg)" stroke-width="2.8" stroke-linecap="round"/>
   </g>
 </svg>
