@@ -260,13 +260,39 @@
     </div>
   </section>
 
-  <!-- COMING SOON -->
+  <!-- COMING SOON / TODO -->
   <section class="tab-panel" id="tab-coming-soon">
     <div class="page-header glass-card"><h2><span class="material-icons-round">bolt</span>&nbsp;AI Automation &amp; Sync</h2></div>
-    <div class="coming-grid">
-      <div class="glass-card coming-card"><span class="material-icons-round cs-icon">smart_toy</span><h3>AI Automation</h3><p>Auto check-in/check-out, availability checks, and reminders. Rolling out once more users join!</p><span class="pill-badge orange">Coming Soon</span></div>
-      <div class="glass-card coming-card"><span class="material-icons-round cs-icon">sync</span><h3>App Sync (Turo etc.)</h3><p>Sync bookings with Turo and other rental platforms to prevent cross-app double bookings.</p><span class="pill-badge orange">Coming Soon</span></div>
-      <div class="glass-card coming-card"><span class="material-icons-round cs-icon">notifications_active</span><h3>Reminders &amp; Alerts</h3><p>Push/email notifications for pickups, drop-offs, and maintenance schedules.</p><span class="pill-badge orange">Coming Soon</span></div>
+
+    <div class="glass-card mt-10">
+      <h3>Planned AI &amp; Sync Features</h3>
+      <p class="muted">Planned items for future development — prioritized as quick wins first.</p>
+      <ol class="ai-todo" style="margin-top:12px; padding-left:18px;">
+        <li><strong>Realtime admin sync</strong> — push booking/create/update/delete events to all open admin clients (WebSockets).</li>
+        <li><strong>Offline client sync</strong> — local queue (IndexedDB) with retry and background sync when online.</li>
+        <li><strong>Two-way calendar sync</strong> — ICS export and optional Google Calendar integration (OAuth) for bookings.</li>
+        <li><strong>OCR auto-fill</strong> — improve license/ID parsing and auto-populate rental forms client-side or via server endpoint.</li>
+        <li><strong>Email/SMS notifications</strong> — confirmations, reminders, and alerts (SMTP/Twilio integration).</li>
+        <li><strong>Scheduled reminders</strong> — cron/job-queue driven reminders for pickups, returns, and maintenance.</li>
+        <li><strong>Admin chat assistant</strong> — an assistant that answers questions about bookings, fleet, and policies (LLM proxy).</li>
+        <li><strong>Auto-tagging &amp; scoring</strong> — heuristic or ML-based risk scoring and automatic tagging of bookings.</li>
+        <li><strong>Dynamic pricing suggestions</strong> — demand-aware price recommendations and seasonal rules.</li>
+        <li><strong>Booking conflict detection</strong> — detection, alerts, and guided resolution for overlapping requests.</li>
+        <li><strong>Background job queue</strong> — reliable worker queue for async tasks (emails, sync jobs, exports).</li>
+        <li><strong>Live vehicle tracking</strong> — show vehicle positions on the map (WebSocket/MQTT ingest).</li>
+        <li><strong>Fleet telemetry ingest</strong> — ingest and store vehicle telemetry for analytics and geofencing.</li>
+        <li><strong>Channel connectors &amp; reconciliation</strong> — adapters for Turo, Expedia, etc., with reconciliation logic.</li>
+        <li><strong>Webhooks &amp; public API</strong> — allow external systems to receive booking events and push bookings in.</li>
+        <li><strong>Import/export (CSV, ICS)</strong> — bulk import/export for bookings, customers, and calendar feeds.</li>
+        <li><strong>Audit logs &amp; versioning</strong> — record changes and allow simple rollback/conflict resolution.</li>
+        <li><strong>Offline-first mobile support</strong> — mobile web app with local-first UX and sync recovery.</li>
+        <li><strong>Push notifications (web/mobile)</strong> — browser push and mobile notifications for urgent alerts.</li>
+        <li><strong>Sync conflict resolution UI</strong> — a small UI for administrators to review and resolve sync conflicts.</li>
+      </ol>
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn-pill-ghost" onclick="showToast('Prioritize features via the repo TODOs')">Prioritize</button>
+        <button class="btn-pill" onclick="showToast('Exporting TODOs — feature coming')">Export TODOs</button>
+      </div>
     </div>
   </section>
 
