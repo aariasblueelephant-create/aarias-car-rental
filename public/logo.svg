@@ -1,21 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 56" width="280" height="48">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 56" width="280" height="52">
   <defs>
     <linearGradient id="neonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#00f0ff"/>
       <stop offset="50%" stop-color="#7b61ff"/>
       <stop offset="100%" stop-color="#ff00ea"/>
     </linearGradient>
-    <filter id="nGlow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    <filter id="softGlow"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#0a0a1a"/>
+    </linearGradient>
+    <filter id="nGlow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="softGlow"><feGaussianBlur stdDeviation="0.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
-  <!-- Badge background -->
-  <rect x="4" y="6" width="44" height="44" rx="12" fill="#0a0a1a" stroke="url(#neonGrad)" stroke-width="1.5"/>
-  <!-- Monogram A -->
-  <text x="26" y="38" text-anchor="middle" font-family="Poppins, Georgia, serif" font-weight="800" font-size="30" fill="url(#neonGrad)" filter="url(#nGlow)" letter-spacing="-1">A</text>
-  <!-- Brand name -->
-  <text x="58" y="25" font-family="Poppins, sans-serif" font-weight="800" font-size="19" fill="url(#neonGrad)" filter="url(#softGlow)" letter-spacing="-0.3">ACRMS</text>
-  <!-- Tagline with thin tracking -->
-  <text x="59" y="41" font-family="Poppins, sans-serif" font-weight="400" font-size="9" fill="#6a7a9a" letter-spacing="2.8">AARIAS CAR RENTAL</text>
-  <!-- Decorative underline -->
-  <line x1="58" y1="45" x2="220" y2="45" stroke="url(#neonGrad)" stroke-width="0.8" opacity="0.5"/>
+
+  <!-- Badge pill -->
+  <rect x="2" y="4" width="130" height="48" rx="14" fill="url(#bgGrad)" stroke="url(#neonGrad)" stroke-width="1.2"/>
+
+  <!-- Stylised A — car-roof silhouette built into the letter -->
+  <g filter="url(#nGlow)" transform="translate(12,6)">
+    <!-- Left leg -->
+    <polygon points="16,38 8,38 18,8 22,8" fill="url(#neonGrad)"/>
+    <!-- Right leg -->
+    <polygon points="34,38 42,38 32,8 28,8" fill="url(#neonGrad)"/>
+    <!-- Crossbar shaped like a car roof-line -->
+    <path d="M14 26 Q17 22 25 22 Q33 22 36 26 L34 28 Q31 25 25 25 Q19 25 16 28 Z" fill="url(#neonGrad)"/>
+    <!-- Wheel dots -->
+    <circle cx="14" cy="38" r="2.5" fill="#0a0a1a" stroke="#00f0ff" stroke-width="1"/>
+    <circle cx="36" cy="38" r="2.5" fill="#0a0a1a" stroke="#ff00ea" stroke-width="1"/>
+  </g>
+
+  <!-- C with speed streaks -->
+  <g filter="url(#softGlow)" transform="translate(60,6)">
+    <path d="M30 8 Q8 8 8 24 Q8 40 30 40" fill="none" stroke="url(#neonGrad)" stroke-width="5" stroke-linecap="round"/>
+    <!-- Speed lines -->
+    <line x1="2" y1="18" x2="10" y2="18" stroke="#00f0ff" stroke-width="1.2" opacity="0.6" stroke-linecap="round"/>
+    <line x1="0" y1="24" x2="10" y2="24" stroke="#7b61ff" stroke-width="1.2" opacity="0.6" stroke-linecap="round"/>
+    <line x1="2" y1="30" x2="10" y2="30" stroke="#ff00ea" stroke-width="1.2" opacity="0.6" stroke-linecap="round"/>
+  </g>
+
+  <!-- R -->
+  <g filter="url(#softGlow)" transform="translate(96,6)">
+    <line x1="10" y1="8" x2="10" y2="40" stroke="url(#neonGrad)" stroke-width="5" stroke-linecap="round"/>
+    <path d="M10 8 Q32 8 32 18 Q32 28 10 28" fill="none" stroke="url(#neonGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="20" y1="28" x2="33" y2="40" stroke="url(#neonGrad)" stroke-width="4.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Tagline -->
+  <text x="142" y="25" font-family="Poppins, sans-serif" font-weight="600" font-size="9.5" fill="#8a9abb" letter-spacing="2">AARIAS</text>
+  <text x="142" y="38" font-family="Poppins, sans-serif" font-weight="400" font-size="8" fill="#5a6a8a" letter-spacing="2.5">CAR RENTAL</text>
+
+  <!-- Decorative speed streak under tagline -->
+  <line x1="142" y1="43" x2="240" y2="43" stroke="url(#neonGrad)" stroke-width="0.6" opacity="0.4" stroke-linecap="round"/>
 </svg>
