@@ -383,9 +383,19 @@
 
   /* ===== BOOKING LINKS ===== */
   function renderBookingLinks() {
+    // Build a shareable booking URL that's correct for local dev and GitHub Pages
+    try {
+      let base = window.location.href.split('#')[0].split('?')[0];
+      base = base.replace(/index\.html$/, '').replace(/\/$/, '');
+      q('bookingUrl').value = base + '/book/alice-gomez';
+    } catch (e) {
+      q('bookingUrl').value = 'book/alice-gomez';
+    }
+
     q('copyLinkBtn').onclick = () => {
       navigator.clipboard.writeText(q('bookingUrl').value).then(() => showToast('Link copied!'));
     };
+
     const loyalDiv = q('loyalList');
     loyalDiv.innerHTML = LOYAL.map(c => `
       <div class="loyal-row">
