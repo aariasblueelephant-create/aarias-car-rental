@@ -137,6 +137,34 @@
     .forEach(id => q(id).addEventListener('input', updateTotals));
   ['categorySelect','paymentMethod'].forEach(id => q(id).addEventListener('change', updateTotals));
 
+
+  // Normalize mock/static rental objects (used when running as static site / Pages)
+  function normalizeRentalFromMock(r) {
+    const out = {};
+    out.id = r.id || '';
+    out.receipt_number = r.receiptNumber || r.receipt_number || r.receipt || '';
+    out.created_at = r.createdAt || r.created_at || new Date().toISOString();
+    out.customer_name = (r.customer && (r.customer.name || r.customerName)) || r.customer_name || '';
+    out.passport_number = (r.customer && (r.customer.passportNumber || r.customer.passport_number)) || '';
+    out.license_plate = (r.vehicle && (r.vehicle.licensePlate || r.vehicle.plate)) || r.license_plate || r.licensePlate || '';
+    out.category = (r.vehicle && r.vehicle.category) || r.category || '';
+    out.hotel = (r.hotel && r.hotel.name) || r.hotel_name || '';
+    out.room = (r.hotel && r.hotel.room) || r.room || '';
+    out.pickup_date = r.pickupDate || r.pickup_date || (out.created_at ? out.created_at.slice(0,10) : '');
+    out.return_date = r.returnDate || r.return_date || '';
+    out.price_per_day = Number(r.pricePerDay || r.price_per_day || 0);
+    out.days = Number(r.days || 1);
+    out.subtotal = Number(r.subtotal || r.sub_total || 0);
+    out.vat_rate = Number(r.vatRate || r.vat_rate || 0);
+    out.vat_amount = Number(r.vatAmount || r.vat_amount || 0);
+    out.total = Number(r.total || out.subtotal || 0);
+    out.payment_method = r.paymentMethod || r.payment_method || 'Card';
+    out.status = (r.status || 'Completed').charAt(0).toUpperCase() + (r.status || '').slice(1);
+    // keep a couple of convenience aliases used elsewhere
+    out.customer = out.customer_name;
+    out.licensePlate = out.license_plate;
+    return out;
+  }
   /* ===== CATEGORY SELECT ===== */
   const sel = q('categorySelect');
   CATEGORIES.forEach(c => {
@@ -255,17 +283,48 @@
   });
 
   /* ===== LOAD ALL DATA ===== */
+  /* ===== LOAD ALL DATA ===== */
   async function loadAll() {
     try {
-      const res  = await fetch('api/rentals');
-      const json = await res.json();
-      allRentals = json.rentals || [];
-      renderDashboardKPIs();
-      renderRecentTable();
-      renderLedger();
-      renderBookingLinks();
-      renderMap();
-    } catch (e) { console.error(e); }
+      // Try the API first (local dev server)
+      const res = await fetch('api/rentals');
+      if (res && res.ok) {
+        const json = await res.json();
+        allRentals = json.rentals || json || [];
+      } else {
+        // Fallback to a static mock file for GitHub Pages / static hosting
+        const alt = await fetch('mock-rentals.json');
+        if (alt && alt.ok) {
+          const altJson = await alt.json();
+          const raw = altJson.rentals || altJson || [];
+          allRentals = (raw || []).map(normalizeRentalFromMock);
+        } else {
+          allRentals = [];
+        }
+      }
+    } catch (e) {
+      // Network error — try local mock as last resort
+      console.warn('API fetch failed, attempting local mock file', e);
+      try {
+        const alt = await fetch('mock-rentals.json');
+        if (alt && alt.ok) {
+          const altJson = await alt.json();
+          const raw = altJson.rentals || altJson || [];
+          allRentals = (raw || []).map(normalizeRentalFromMock);
+        } else {
+          allRentals = [];
+        }
+      } catch (err) {
+        console.error('Failed to load any rentals', err);
+        allRentals = [];
+      }
+    }
+
+    renderDashboardKPIs();
+    renderRecentTable();
+    renderLedger();
+    renderBookingLinks();
+    renderMap();
   }
 
   function renderDashboardKPIs() {

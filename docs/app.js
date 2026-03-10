@@ -58,6 +58,7 @@
     if (window.innerWidth < 768) q('sidebar').classList.remove('open');
     if (id === 'earnings') renderEarningsChart();
     if (id === 'schedule') renderSchedule();
+    if (id === 'map') renderMap();
   }
   window.switchTab = switchTab;
 
@@ -136,6 +137,34 @@
     .forEach(id => q(id).addEventListener('input', updateTotals));
   ['categorySelect','paymentMethod'].forEach(id => q(id).addEventListener('change', updateTotals));
 
+
+  // Normalize mock/static rental objects (used when running as static site / Pages)
+  function normalizeRentalFromMock(r) {
+    const out = {};
+    out.id = r.id || '';
+    out.receipt_number = r.receiptNumber || r.receipt_number || r.receipt || '';
+    out.created_at = r.createdAt || r.created_at || new Date().toISOString();
+    out.customer_name = (r.customer && (r.customer.name || r.customerName)) || r.customer_name || '';
+    out.passport_number = (r.customer && (r.customer.passportNumber || r.customer.passport_number)) || '';
+    out.license_plate = (r.vehicle && (r.vehicle.licensePlate || r.vehicle.plate)) || r.license_plate || r.licensePlate || '';
+    out.category = (r.vehicle && r.vehicle.category) || r.category || '';
+    out.hotel = (r.hotel && r.hotel.name) || r.hotel_name || '';
+    out.room = (r.hotel && r.hotel.room) || r.room || '';
+    out.pickup_date = r.pickupDate || r.pickup_date || (out.created_at ? out.created_at.slice(0,10) : '');
+    out.return_date = r.returnDate || r.return_date || '';
+    out.price_per_day = Number(r.pricePerDay || r.price_per_day || 0);
+    out.days = Number(r.days || 1);
+    out.subtotal = Number(r.subtotal || r.sub_total || 0);
+    out.vat_rate = Number(r.vatRate || r.vat_rate || 0);
+    out.vat_amount = Number(r.vatAmount || r.vat_amount || 0);
+    out.total = Number(r.total || out.subtotal || 0);
+    out.payment_method = r.paymentMethod || r.payment_method || 'Card';
+    out.status = (r.status || 'Completed').charAt(0).toUpperCase() + (r.status || '').slice(1);
+    // keep a couple of convenience aliases used elsewhere
+    out.customer = out.customer_name;
+    out.licensePlate = out.license_plate;
+    return out;
+  }
   /* ===== CATEGORY SELECT ===== */
   const sel = q('categorySelect');
   CATEGORIES.forEach(c => {
@@ -256,14 +285,45 @@
   /* ===== LOAD ALL DATA ===== */
   async function loadAll() {
     try {
-      const res  = await fetch('api/rentals');
-      const json = await res.json();
-      allRentals = json.rentals || [];
-      renderDashboardKPIs();
-      renderRecentTable();
-      renderLedger();
-      renderBookingLinks();
-    } catch (e) { console.error(e); }
+      // Try the API first (local dev server)
+      const res = await fetch('api/rentals');
+      if (res && res.ok) {
+        const json = await res.json();
+        allRentals = json.rentals || json || [];
+      } else {
+        // Fallback to a static mock file for GitHub Pages / static hosting
+        const alt = await fetch('mock-rentals.json');
+        if (alt && alt.ok) {
+          const altJson = await alt.json();
+          const raw = altJson.rentals || altJson || [];
+          allRentals = (raw || []).map(normalizeRentalFromMock);
+        } else {
+          allRentals = [];
+        }
+      }
+    } catch (e) {
+      // Network error — try local mock as last resort
+      console.warn('API fetch failed, attempting local mock file', e);
+      try {
+        const alt = await fetch('mock-rentals.json');
+        if (alt && alt.ok) {
+          const altJson = await alt.json();
+          const raw = altJson.rentals || altJson || [];
+          allRentals = (raw || []).map(normalizeRentalFromMock);
+        } else {
+          allRentals = [];
+        }
+      } catch (err) {
+        console.error('Failed to load any rentals', err);
+        allRentals = [];
+      }
+    }
+
+    renderDashboardKPIs();
+    renderRecentTable();
+    renderLedger();
+    renderBookingLinks();
+    renderMap();
   }
 
   function renderDashboardKPIs() {
@@ -381,6 +441,129 @@
     }).join('');
   }
 
+  /* ===== MAP: Leaflet Heatmap + Clusters (Bay Area) ===== */
+  let mapInitialized = false;
+  let mapObj = null;
+  let markersGroup = null;
+  let heatLayer = null;
+
+  function escapeHtml(s) {
+    return String(s||'').replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]; });
+  }
+
+  function hashCode(str) {
+    let h = 0; for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; } return h;
+  }
+
+  function getCoordsForRental(r) {
+    const baseLat = 37.7749; // San Francisco / Bay Area center
+    const baseLng = -122.4194;
+    const key = (r.license_plate || r.receipt_number || r.customer_name || '') + '';
+    const h = Math.abs(hashCode(key || String(Math.random())));
+    const rnd1 = (h % 10000) / 10000;
+    const rnd2 = ((h >> 8) % 10000) / 10000;
+    const lat = baseLat + (rnd1 - 0.5) * 0.18; // ~±0.09° (~10km)
+    const lng = baseLng + (rnd2 - 0.5) * 0.3;  // ~±0.15°
+    return [lat, lng];
+  }
+
+  function renderMap() {
+    if (typeof L === 'undefined') { console.warn('Leaflet not loaded yet.'); return; }
+    if (!mapInitialized) {
+      mapObj = L.map('map', { preferCanvas: true }).setView([37.7749, -122.4194], 11);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(mapObj);
+      markersGroup = L.markerClusterGroup();
+      heatLayer = L.heatLayer([], { radius: 25, blur: 18, maxZoom: 17, gradient: {0.4: '#00f0ff', 0.65: '#ff00ea', 1: '#ffc800'} });
+      mapInitialized = true;
+
+      const heatToggle = q('heatToggle');
+      const clusterToggle = q('clusterToggle');
+      if (heatToggle) heatToggle.addEventListener('change', () => { if (heatToggle.checked) heatLayer.addTo(mapObj); else mapObj.removeLayer(heatLayer); });
+      if (clusterToggle) clusterToggle.addEventListener('change', () => { if (clusterToggle.checked) markersGroup.addTo(mapObj); else mapObj.removeLayer(markersGroup); });
+    }
+    updateMapData();
+  }
+
+  function updateMapData() {
+    if (!mapInitialized) return;
+    markersGroup.clearLayers();
+    const heatPoints = [];
+    allRentals.forEach(r => {
+      const [lat, lng] = getCoordsForRental(r);
+      const intensity = Math.min(1, (r.total || 1) / 200);
+      heatPoints.push([lat, lng, intensity]);
+      const name = (r.customer_name || '').split(' ')[0] || 'Guest';
+      const popup = `<strong>${escapeHtml(name)}</strong><br/>${escapeHtml(r.category||'')} · <code>${escapeHtml(r.license_plate||'')}</code><br/>${(r.pickup_date||'').slice(0,10)}`;
+      const m = L.marker([lat, lng]);
+      m.bindPopup(popup);
+      markersGroup.addLayer(m);
+    });
+    heatLayer.setLatLngs(heatPoints);
+    if (q('heatToggle') && q('heatToggle').checked) heatLayer.addTo(mapObj);
+    if (q('clusterToggle') && q('clusterToggle').checked) markersGroup.addTo(mapObj);
+  }
+
+  /* ===== FULLSCREEN MAP OVERLAY ===== */
+  let mapFullInitialized = false;
+  let mapFullObj = null;
+  let markersGroupFull = null;
+  let heatLayerFull = null;
+
+  function openMapOverlay() {
+    const overlay = q('mapOverlay');
+    if (!overlay) return;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    // sync toggles from embedded map if present
+    const heat = q('heatToggle'); const cluster = q('clusterToggle');
+    const heatF = q('heatToggleFull'); const clusterF = q('clusterToggleFull');
+    if (heat && heatF) heatF.checked = heat.checked;
+    if (cluster && clusterF) clusterF.checked = cluster.checked;
+    if (!mapFullInitialized) initMapFull(); else { updateFullMapData(); setTimeout(()=>mapFullObj.invalidateSize(), 200); }
+  }
+
+  function closeMapOverlay() {
+    const overlay = q('mapOverlay'); if (!overlay) return;
+    overlay.classList.remove('open'); overlay.setAttribute('aria-hidden', 'true'); document.body.style.overflow = '';
+  }
+
+  function initMapFull() {
+    if (typeof L === 'undefined') { console.warn('Leaflet not loaded for full map'); return; }
+    mapFullObj = L.map('mapFull', { preferCanvas: true }).setView([37.7749, -122.4194], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(mapFullObj);
+    markersGroupFull = L.markerClusterGroup();
+    heatLayerFull = L.heatLayer([], { radius: 30, blur: 25, maxZoom: 17, gradient: {0.4:'#00f0ff',0.65:'#ff00ea',1:'#ffc800'} });
+    mapFullInitialized = true;
+
+    const heatToggleFull = q('heatToggleFull');
+    const clusterToggleFull = q('clusterToggleFull');
+    if (heatToggleFull) heatToggleFull.addEventListener('change', () => { if (heatToggleFull.checked) heatLayerFull.addTo(mapFullObj); else mapFullObj.removeLayer(heatLayerFull); });
+    if (clusterToggleFull) clusterToggleFull.addEventListener('change', () => { if (clusterToggleFull.checked) markersGroupFull.addTo(mapFullObj); else mapFullObj.removeLayer(markersGroupFull); });
+
+    updateFullMapData();
+    setTimeout(()=>mapFullObj.invalidateSize(), 250);
+  }
+
+  function updateFullMapData() {
+    if (!mapFullInitialized) return;
+    markersGroupFull.clearLayers();
+    const heatPoints = [];
+    allRentals.forEach(r => {
+      const [lat, lng] = getCoordsForRental(r);
+      const intensity = Math.min(1, (r.total || 1) / 200);
+      heatPoints.push([lat, lng, intensity]);
+      const name = (r.customer_name || '').split(' ')[0] || 'Guest';
+      const popup = `<strong>${escapeHtml(name)}</strong><br/>${escapeHtml(r.category||'')} · <code>${escapeHtml(r.license_plate||'')}</code><br/>${(r.pickup_date||'').slice(0,10)}`;
+      const m = L.marker([lat, lng]);
+      m.bindPopup(popup);
+      markersGroupFull.addLayer(m);
+    });
+    heatLayerFull.setLatLngs(heatPoints);
+    if (q('heatToggleFull') && q('heatToggleFull').checked) heatLayerFull.addTo(mapFullObj);
+    if (q('clusterToggleFull') && q('clusterToggleFull').checked) markersGroupFull.addTo(mapFullObj);
+  }
+
   /* ===== BOOKING LINKS ===== */
   function renderBookingLinks() {
     // Build a shareable booking URL that's correct for local dev and GitHub Pages
@@ -447,4 +630,8 @@
   renderBookingLinks();
   renderSchedule();
   updateTotals();
+  // Wire overlay open/close
+  const openBtn = q('openHeatmapBtn'); if (openBtn) openBtn.addEventListener('click', openMapOverlay);
+  const closeBtn = q('closeMapOverlay'); if (closeBtn) closeBtn.addEventListener('click', closeMapOverlay);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && q('mapOverlay') && q('mapOverlay').classList.contains('open')) closeMapOverlay(); });
 })();
