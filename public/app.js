@@ -417,7 +417,7 @@
           borderColor: 'rgba(0,240,255,1)',
           borderWidth: 2,
           borderRadius: 8,
-          hoverBackgroundColor: 'rgba(255,0,234,0.7)',,
+          hoverBackgroundColor: 'rgba(255,0,234,0.7)',
         }]
       },
       options: {
