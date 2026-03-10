@@ -16,6 +16,27 @@
 </head>
 <body>
 
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="theme-color" content="#00f0ff"/>
+  <meta name="description" content="Aarias Car Rental Management System — Fleet scheduling, OCR plates, A5 receipts, earnings tracking."/>
+  <meta property="og:title" content="Aarias Car Rental Management"/>
+  <meta property="og:description" content="Professional car rental management with OCR, scheduling, and real-time earnings."/>
+  <meta property="og:type" content="website"/>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+  <title>Aarias Car Rental Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
 <div class="mesh-bg"></div>
 
 <nav class="sidebar" id="sidebar">
@@ -26,6 +47,7 @@
     <li class="nav-item active" data-tab="dashboard"><span class="material-icons-round">dashboard</span><span>Dashboard</span></li>
     <li class="nav-item" data-tab="new-rental"><span class="material-icons-round">add_circle</span><span>New Rental</span></li>
     <li class="nav-item" data-tab="schedule"><span class="material-icons-round">calendar_month</span><span>Schedule</span></li>
+    <li class="nav-item" data-tab="map"><span class="material-icons-round">map</span><span>Map</span></li>
     <li class="nav-item" data-tab="earnings"><span class="material-icons-round">trending_up</span><span>Earnings</span></li>
     <li class="nav-item" data-tab="fleet"><span class="material-icons-round">directions_car</span><span>Fleet</span></li>
     <li class="nav-item" data-tab="booking-link"><span class="material-icons-round">link</span><span>Booking Links</span></li>
@@ -55,6 +77,7 @@
       </div>
       <div class="header-actions">
         <button class="btn-pill" onclick="switchTab('new-rental')"><span class="material-icons-round">add</span> New Rental</button>
+        <button class="btn-pill-ghost" id="openHeatmapBtn"><span class="material-icons-round">map</span> View Heatmap</button>
       </div>
     </div>
     <div class="kpi-grid">
@@ -178,13 +201,26 @@
     </div>
   </section>
 
+  <!-- MAP -->
+  <section class="tab-panel" id="tab-map">
+    <div class="page-header glass-card"><h2><span class="material-icons-round">map</span>&nbsp;Live Map</h2><p class="muted">Heatmap of pickups and cluster playback across the Bay Area.</p></div>
+    <div class="glass-card mt-20" style="position:relative;">
+      <div id="mapControls" style="position:absolute; top:12px; right:12px; z-index:4500; display:flex; gap:8px; align-items:center;">
+        <label class="map-toggle"><input type="checkbox" id="heatToggle" checked/> Heatmap</label>
+        <label class="map-toggle"><input type="checkbox" id="clusterToggle" checked/> Clusters</label>
+      </div>
+      <div id="map" style="height:560px; border-radius:12px; overflow:hidden;"></div>
+      <div class="muted small" style="margin-top:10px">Tip: Toggle layers and zoom to explore hotspots.</div>
+    </div>
+  </section>
+
   <!-- EARNINGS -->
   <section class="tab-panel" id="tab-earnings">
     <div class="page-header glass-card"><h2><span class="material-icons-round">trending_up</span>&nbsp;Earnings &amp; Payments</h2></div>
     <div class="kpi-grid">
       <div class="kpi glass-card"><div class="kpi-icon" style="background:linear-gradient(135deg,#00f0ff,#7b61ff)"><span class="material-icons-round">account_balance_wallet</span></div><div><div class="kpi-val" id="earningsMonthly">$0</div><div class="kpi-label">This Month</div></div></div>
       <div class="kpi glass-card"><div class="kpi-icon" style="background:linear-gradient(135deg,#39ff14,#00c9a7)"><span class="material-icons-round">receipt_long</span></div><div><div class="kpi-val" id="earningsRentals">0</div><div class="kpi-label">Total Rentals</div></div></div>
-      <div class="kpi glass-card"><div class="kpi-icon" style="background:linear-gradient(135deg,#ffc800,#ffaa00)"><span class="material-icons-round">supervisor_account</span></div><div><div class="kpi-val" id="earningsCommission">$0</div><div class="kpi-label">Agent Commission</div></div></div>
+      <div class="kpi glass-card"><div class="kpi-icon" style="background:linear-gradient(135deg,#ffc800,#ffaa00)'><span class="material-icons-round">supervisor_account</span></div><div><div class="kpi-val" id="earningsCommission">$0</div><div class="kpi-label">Agent Commission</div></div></div>
     </div>
     <div class="glass-card mt-20"><h3>Monthly Revenue</h3><canvas id="earningsChart" height="200"></canvas></div>
     <div class="glass-card mt-20">
@@ -236,11 +272,26 @@
 
 </div>
 
-<div id="toast" class="toast"></div>
+  <!-- FULLSCREEN MAP OVERLAY -->
+  <div id="mapOverlay" class="map-overlay" aria-hidden="true">
+    <div class="map-overlay-inner">
+      <button id="closeMapOverlay" class="map-close"><span class="material-icons-round">close</span></button>
+      <div id="mapFull"></div>
+      <div id="mapOverlayControls" style="position:absolute; top:12px; right:12px; z-index:5000; display:flex; gap:8px;">
+        <label class="map-toggle"><input type="checkbox" id="heatToggleFull" checked/> Heatmap</label>
+        <label class="map-toggle"><input type="checkbox" id="clusterToggleFull" checked/> Clusters</label>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
 <script src="https://unpkg.com/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
