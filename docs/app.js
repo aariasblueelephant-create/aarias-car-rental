@@ -83,7 +83,7 @@
     if (window.innerWidth < 768) q('sidebar').classList.remove('open');
     if (id === 'earnings') renderEarningsChart();
     if (id === 'schedule') renderSchedule();
-    if (id === 'map') renderMap();
+    if (id === 'map') { renderMap(); if (mapObj) setTimeout(()=>mapObj.invalidateSize(), 200); }
   }
   window.switchTab = switchTab;
 

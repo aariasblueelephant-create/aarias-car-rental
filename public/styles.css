@@ -206,19 +206,22 @@ input, select { font-family: inherit; }
 
 /* Vector elements within SVGs are styled inline or inherited */
 
-/* ===== LOGO PLATE (GOLDEN GLASS) ===== */
+/* ===== LOGO PLATE (SOLID GOLD) ===== */
 .logo-plate {
   display: inline-flex;
   align-items: center;
-  padding: 8px 12px;
+  justify-content: center;
+  padding: 10px 14px;
   border-radius: 12px;
-  background: linear-gradient(180deg, rgba(212,175,55,0.28), rgba(212,175,55,0.12));
-  border: 1.5px solid rgba(212,175,55,0.35);
-  box-shadow: 0 10px 30px rgba(212,175,55,0.12), inset 0 1px 0 rgba(255,255,255,0.3);
-  backdrop-filter: blur(6px) saturate(1.1);
+  background: linear-gradient(160deg, #d4af37 0%, #b8942e 50%, #d4af37 100%);
+  border: 2px solid #c9a42f;
+  box-shadow: 0 4px 16px rgba(180,140,30,0.35), inset 0 1px 0 rgba(255,235,150,0.5);
+  max-width: calc(var(--sidebar-w) - 40px);
+  box-sizing: border-box;
 }
-.logo-plate .nav-logo { height: 40px; display: block; filter: brightness(1) contrast(1.1); }
-[data-theme="dark"] .logo-plate .nav-logo { filter: none; }
+.logo-plate .nav-logo { height: 38px; display: block; filter: brightness(1.1) contrast(1.05); }
+[data-theme="dark"] .logo-plate { box-shadow: 0 4px 20px rgba(212,175,55,0.3), inset 0 1px 0 rgba(255,235,150,0.35); }
+[data-theme="dark"] .logo-plate .nav-logo { filter: brightness(1.15); }
 .logo-plate.logo-plate-mobile { padding: 6px 10px; border-radius: 10px; }
 .logo-plate.logo-plate-mobile .nav-logo-mobile { height: 28px; display: block; }
 
