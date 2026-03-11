@@ -212,12 +212,13 @@ input, select { font-family: inherit; }
   align-items: center;
   padding: 8px 12px;
   border-radius: 12px;
-  background: linear-gradient(180deg, rgba(212,175,55,0.14), rgba(212,175,55,0.06));
-  border: 1px solid rgba(212,175,55,0.18);
-  box-shadow: 0 10px 30px rgba(212,175,55,0.08), inset 0 1px 0 rgba(255,255,255,0.25);
+  background: linear-gradient(180deg, rgba(212,175,55,0.28), rgba(212,175,55,0.12));
+  border: 1.5px solid rgba(212,175,55,0.35);
+  box-shadow: 0 10px 30px rgba(212,175,55,0.12), inset 0 1px 0 rgba(255,255,255,0.3);
   backdrop-filter: blur(6px) saturate(1.1);
 }
-.logo-plate .nav-logo { height: 40px; display: block; }
+.logo-plate .nav-logo { height: 40px; display: block; filter: brightness(1) contrast(1.1); }
+[data-theme="dark"] .logo-plate .nav-logo { filter: none; }
 .logo-plate.logo-plate-mobile { padding: 6px 10px; border-radius: 10px; }
 .logo-plate.logo-plate-mobile .nav-logo-mobile { height: 28px; display: block; }
 
