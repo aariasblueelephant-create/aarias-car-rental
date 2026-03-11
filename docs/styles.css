@@ -140,7 +140,7 @@ input, select { font-family: inherit; }
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  margin-left: auto;
+  margin-left: 0;
 }
 
 [data-theme="dark"] .theme-toggle-btn {
@@ -205,6 +205,36 @@ input, select { font-family: inherit; }
 }
 
 /* Vector elements within SVGs are styled inline or inherited */
+
+/* ===== LOGO PLATE (GOLDEN GLASS) ===== */
+.logo-plate {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(212,175,55,0.14), rgba(212,175,55,0.06));
+  border: 1px solid rgba(212,175,55,0.18);
+  box-shadow: 0 10px 30px rgba(212,175,55,0.08), inset 0 1px 0 rgba(255,255,255,0.25);
+  backdrop-filter: blur(6px) saturate(1.1);
+}
+.logo-plate .nav-logo { height: 40px; display: block; }
+.logo-plate.logo-plate-mobile { padding: 6px 10px; border-radius: 10px; }
+.logo-plate.logo-plate-mobile .nav-logo-mobile { height: 28px; display: block; }
+
+/* ===== TOP-RIGHT CONTROLS ===== */
+.top-right-controls {
+  position: fixed;
+  top: 12px;
+  right: 18px;
+  z-index: 220;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+@media (max-width: 767px) {
+  .top-right-controls { display: none; }
+}
 
 /* ===== PAGE HEADER ===== */
 .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
