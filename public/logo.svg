@@ -72,7 +72,16 @@
   </g>
 
   <!-- Brand text -->
-  <text x="154" y="24" font-family="'Poppins', 'Segoe UI', sans-serif" font-weight="800" font-size="14" fill="#e8ecf1" letter-spacing="4">ACR</text>
-  <text x="154" y="38" font-family="'Poppins', 'Segoe UI', sans-serif" font-weight="400" font-size="6.5" fill="#6a7a8a" letter-spacing="2">AARIAS CAR RENTAL</text>
-  <line x1="154" y1="43" x2="256" y2="43" stroke="#888" stroke-width="0.4" opacity="0.3" stroke-linecap="round"/>
+  <text x="154" y="22" font-family="'Poppins', 'Segoe UI', sans-serif" font-weight="800" font-size="16" fill="#f8f9fa" letter-spacing="4">ACR</text>
+
+  <!-- Full name with subtle embossed effect that contrasts on gold -->
+  <g font-family="'Poppins', 'Segoe UI', sans-serif" font-weight="600" font-size="10" letter-spacing="0.6">
+    <!-- soft shadow behind -->
+    <text x="154.8" y="44.8" fill="#000000" opacity="0.28">Aaria's Rental Car</text>
+    <!-- main text -->
+    <text x="154" y="44" fill="#0b1220">Aaria's Rental Car</text>
+    <!-- top-left highlight to emulate emboss -->
+    <text x="153.2" y="43.2" fill="#ffffff" opacity="0.18">Aaria's Rental Car</text>
+  </g>
+  <line x1="154" y1="48" x2="296" y2="48" stroke="#888" stroke-width="0.4" opacity="0.18" stroke-linecap="round"/>
 </svg>
