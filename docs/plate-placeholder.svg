@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="160" viewBox="0 0 600 160" role="img" aria-label="License plate placeholder">
+  <rect width="600" height="160" rx="12" ry="12" fill="#fffdf6" stroke="#d4af37" stroke-width="10"/>
+  <rect x="14" y="14" width="572" height="46" rx="8" fill="#f6ecd0"/>
+  <text x="50%" y="56%" font-family="Arial, Helvetica, sans-serif" font-size="56" fill="#111" text-anchor="middle" dominant-baseline="central">ABC-1234</text>
+  <text x="92%" y="88%" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#666" text-anchor="end">PLATE</text>
+</svg>
