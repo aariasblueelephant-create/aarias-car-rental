@@ -121,25 +121,44 @@
   q('doOcrBtn').addEventListener('click', async () => {
     const img = q('preview');
     if (!img.src || img.src === window.location.href) { showToast('Capture a photo first'); return; }
-    q('doOcrBtn').querySelector('span:last-child').textContent = 'Scanning…';
+    const btn = q('doOcrBtn');
+    const btnText = btn.querySelector('span:last-child');
+    if (btnText) btnText.textContent = 'Scanning…';
     q('ocrStatus').textContent = 'OCR running — please wait…';
     try {
-      const w = Tesseract.createWorker();
-      await w.load(); await w.loadLanguage('eng'); await w.initialize('eng');
-      const { data } = await w.recognize(img.src);
-      await w.terminate();
-      const text = (data && data.text) ? data.text.replace(/\s+/g, ' ').trim() : '';
-      const match = text.match(/[A-Z0-9-]{3,8}/i);
-      q('doOcrBtn').querySelector('span:last-child').textContent = 'OCR';
-      if (match) {
-        q('licensePlate').value = match[0].toUpperCase();
-        q('ocrStatus').textContent = `✅ Plate detected: ${match[0].toUpperCase()}`;
+      const worker = Tesseract.createWorker({ logger: m => {/* optional progress */} });
+      await worker.load();
+      await worker.loadLanguage('eng');
+      await worker.initialize('eng');
+      // prefer a restricted character set to improve plate / MRZ accuracy
+      await worker.setParameters({ tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-<' });
+      const { data } = await worker.recognize(img.src);
+      await worker.terminate();
+      const text = data && data.text ? data.text.replace(/\r/g,'\n').replace(/[ \t]+/g,' ').trim() : '';
+      // try to detect MRZ (passport) first
+      const mrz = findMRZ(text);
+      if (mrz) {
+        const parsed = parseMRZ(mrz);
+        if (parsed) {
+          if (parsed.passportNumber) q('passportNumber').value = parsed.passportNumber;
+          if (parsed.name) q('customerName').value = parsed.name;
+          q('ocrStatus').textContent = '✅ Passport MRZ detected';
+        }
       } else {
-        q('ocrStatus').textContent = 'No plate found — enter manually.';
+        const match = text.match(/[A-Z0-9-]{3,10}/i);
+        if (match) {
+          const plate = match[0].toUpperCase();
+          q('licensePlate').value = plate;
+          q('ocrStatus').textContent = `✅ Plate detected: ${plate}`;
+          lookupVehicleByPlate(plate);
+        } else {
+          q('ocrStatus').textContent = 'No plate or passport MRZ found — enter manually.';
+        }
       }
     } catch (err) {
-      q('doOcrBtn').querySelector('span:last-child').textContent = 'OCR';
       showToast('OCR failed: ' + err.message);
+    } finally {
+      if (btnText) btnText.textContent = 'OCR';
     }
   });
 
@@ -205,6 +224,108 @@
   q('pickupDate').value = today;
   q('returnDate').value = tomorrow;
   updateTotals();
+
+  /* ===== VEHICLE LOOKUP, QR SCANNING & MRZ HELPERS ===== */
+  // populate vehicle datalist for quick search
+  const vehicleListEl = q('vehicleList');
+  if (vehicleListEl) {
+    FLEET.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = `${v.brand} ${v.model} — ${v.plate}`;
+      vehicleListEl.appendChild(opt);
+    });
+  }
+
+  function lookupVehicleByPlate(plate) {
+    if (!plate) return null;
+    const normalized = plate.replace(/\s/g,'').toUpperCase();
+    const found = FLEET.find(v => v.plate.replace(/\s/g,'').toUpperCase() === normalized);
+    if (found) {
+      if (q('vehicleSearch')) q('vehicleSearch').value = `${found.brand} ${found.model} — ${found.plate}`;
+      if (found.pricePerDay) q('pricePerDay').value = found.pricePerDay;
+      showToast('Vehicle found: ' + found.brand + ' ' + found.model);
+      return found;
+    }
+    showToast('Vehicle not found for plate: ' + plate);
+    return null;
+  }
+
+  function findMRZ(text) {
+    if (!text) return null;
+    const lines = text.split('\n').map(l => l.replace(/\s+/g,'')).filter(Boolean);
+    for (let i=0;i<lines.length-1;i++) {
+      const a = lines[i];
+      const b = lines[i+1];
+      if ((a.length === 44 && b.length === 44) || (a.length === 30 && b.length === 30)) {
+        if (/^[A-Z0-9<]+$/.test(a) && /^[A-Z0-9<]+$/.test(b)) return a + '\n' + b;
+      }
+    }
+    const joined = lines.join('');
+    const m = joined.match(/[A-Z0-9<]{30,44}/g);
+    if (m && m.length >= 2) return m.slice(0,2).join('\n');
+    return null;
+  }
+
+  function parseMRZ(mrz) {
+    const lines = mrz.split('\n').map(l => l.trim());
+    if (lines.length < 2) return null;
+    const line1 = lines[0];
+    const line2 = lines[1];
+    const passportNumber = (line2.substring(0,9) || '').replace(/</g,'').trim();
+    const namePart = (line1.substring(5) || '').split('<<');
+    const surname = (namePart[0]||'').replace(/</g,' ').trim();
+    const given = (namePart[1]||'').replace(/</g,' ').trim();
+    const fullName = (given + ' ' + surname).trim();
+    return { passportNumber, name: fullName };
+  }
+
+  // QR scanning from captured canvas/image
+  const scanQrBtn = document.getElementById('scanQrBtn');
+  if (scanQrBtn) {
+    scanQrBtn.addEventListener('click', async () => {
+      const canvas = q('captureCanvas');
+      const ctx = canvas.getContext('2d');
+      // prefer live video frame when available
+      const video = q('video');
+      if (video && video.srcObject && video.videoWidth) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      } else {
+        const img = q('preview');
+        if (!img || !img.src || img.src === window.location.href) { showToast('Open camera or capture image first'); return; }
+        canvas.width = img.naturalWidth || 640;
+        canvas.height = img.naturalHeight || 480;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      }
+      try {
+        const imageData = ctx.getImageData(0,0,canvas.width, canvas.height);
+        const code = jsQR(imageData.data, canvas.width, canvas.height);
+        if (code && code.data) {
+          let payload = code.data;
+          try { payload = JSON.parse(code.data); } catch(e) {}
+          q('ocrStatus').textContent = 'QR scanned';
+          if (typeof payload === 'string') lookupVehicleByPlate(payload);
+          else if (payload.plate) lookupVehicleByPlate(payload.plate);
+          else if (payload.vehicle) { if (q('vehicleSearch')) q('vehicleSearch').value = payload.vehicle; showToast('QR vehicle scanned'); }
+        } else {
+          showToast('No QR code found');
+        }
+      } catch (e) {
+        showToast('QR scan failed: ' + e.message);
+      }
+    });
+  }
+
+  // vehicle search input -> try to extract plate and lookup
+  const vehicleSearchInput = q('vehicleSearch');
+  if (vehicleSearchInput) {
+    vehicleSearchInput.addEventListener('change', () => {
+      const val = vehicleSearchInput.value || '';
+      const m = val.match(/[A-Z0-9-]{3,10}/i);
+      if (m) lookupVehicleByPlate(m[0]);
+    });
+  }
 
   /* ===== DOUBLE BOOKING CONFLICT CHECK ===== */
   let allRentals = [];

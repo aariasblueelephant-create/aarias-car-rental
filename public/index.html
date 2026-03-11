@@ -183,6 +183,7 @@
             <button class="btn-icon-cam" id="openCamera" title="Open Camera"><span class="material-icons-round">videocam</span> Camera</button>
             <button class="btn-icon-cam" id="captureBtn" title="Capture"><span class="material-icons-round">photo_camera</span> Capture</button>
             <button class="btn-icon-cam" id="doOcrBtn" title="Run OCR"><span class="material-icons-round">document_scanner</span> OCR</button>
+            <button class="btn-icon-cam" id="scanQrBtn" title="Scan QR"><span class="material-icons-round">qr_code_scanner</span> Scan QR</button>
           </div>
           <div id="ocrStatus" class="ocr-status"></div>
         </div>
@@ -190,6 +191,7 @@
         <h3 style="margin-top:22px">Rental Details</h3>
         <div class="form-grid2">
           <label>License Plate<div class="iw"><span class="material-icons-round">pin</span><input id="licensePlate" placeholder="ABC-1234"/></div></label>
+          <label>Vehicle<div class="iw"><span class="material-icons-round">directions_car</span><input id="vehicleSearch" list="vehicleList" placeholder="Search or scan vehicle"/><datalist id="vehicleList"></datalist></div></label>
           <label>Customer Name<div class="iw"><span class="material-icons-round">person</span><input id="customerName" placeholder="John Doe"/></div></label>
           <label>Passport / ID<div class="iw"><span class="material-icons-round">badge</span><input id="passportNumber" placeholder="X1234567"/></div></label>
           <label>Hotel (optional)<div class="iw"><span class="material-icons-round">hotel</span><input id="hotelName" placeholder="Seaside Hotel"/></div></label>
@@ -364,6 +366,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
