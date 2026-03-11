@@ -13,12 +13,12 @@
 
   /* ---- MOCK FLEET ---- */
   const FLEET = [
-    { brand:'Toyota', model:'Corolla',  category:'Economy',  plate:'ABC-1234', img:'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600&q=80', status:'available' },
-    { brand:'BMW',    model:'5 Series', category:'Luxury',   plate:'XYZ-987',  img:'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80', status:'booked' },
-    { brand:'Renault',model:'Captur',   category:'Standard', plate:'LMN-4567', img:'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&q=80', status:'available' },
-    { brand:'Ford',   model:'Transit',  category:'Van',      plate:'VAN-001',  img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80', status:'available' },
-    { brand:'Honda',  model:'CBR 500',  category:'Motorbike',plate:'MBK-909',  img:'https://images.unsplash.com/photo-1558981359-219d6364c9c8?w=600&q=80', status:'overdue' },
-    { brand:'Mercedes',model:'E-Class', category:'Luxury',   plate:'MEX-321',  img:'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=600&q=80', status:'available' },
+    { brand:'Toyota', model:'Corolla',  category:'Economy',  plate:'ABC-1234', pricePerDay:25, img:'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600&q=80', status:'available' },
+    { brand:'BMW',    model:'5 Series', category:'Luxury',   plate:'XYZ-987',  pricePerDay:95, img:'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80', status:'booked' },
+    { brand:'Renault',model:'Captur',   category:'Standard', plate:'LMN-4567', pricePerDay:40, img:'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&q=80', status:'available' },
+    { brand:'Ford',   model:'Transit',  category:'Van',      plate:'VAN-001',  pricePerDay:55, img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80', status:'available' },
+    { brand:'Honda',  model:'CBR 500',  category:'Motorbike',plate:'MBK-909',  pricePerDay:20, img:'https://images.unsplash.com/photo-1558981359-219d6364c9c8?w=600&q=80', status:'overdue' },
+    { brand:'Mercedes',model:'E-Class', category:'Luxury',   plate:'MEX-321',  pricePerDay:110, img:'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=600&q=80', status:'available' },
   ];
 
   /* ---- MOCK LOYAL CLIENTS ---- */
@@ -111,8 +111,18 @@
   q('captureBtn').addEventListener('click', () => {
     const video = q('video');
     const canvas = q('captureCanvas');
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
+    // guard: ensure camera stream/frame is available
+    if (!video) { showToast('Camera element missing'); return; }
+    const vw = video.videoWidth || 0;
+    const vh = video.videoHeight || 0;
+    if (vw === 0 || vh === 0) {
+      // make it explicit and helpful for the user
+      showToast('Camera not ready — open Camera and allow permission, then try Capture.');
+      q('ocrStatus').textContent = 'Open camera and allow permission, then capture.';
+      return;
+    }
+    canvas.width = vw || 640;
+    canvas.height = vh || 480;
     canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
     q('preview').src = canvas.toDataURL('image/jpeg');
     q('ocrStatus').textContent = 'Photo captured — click OCR to read the plate.';
@@ -628,6 +638,9 @@
       if (clusterToggle) clusterToggle.addEventListener('change', () => { if (clusterToggle.checked) markersGroup.addTo(mapObj); else mapObj.removeLayer(markersGroup); });
     }
     updateMapData();
+    // When map tab becomes visible Leaflet sometimes needs a size invalidation
+    // to render tiles/overlays correctly (fixed sidebar + hidden -> visible flow)
+    try { setTimeout(() => { if (mapObj && mapObj.invalidateSize) mapObj.invalidateSize(); }, 250); } catch (e) { /* ignore */ }
   }
 
   function updateMapData() {
