@@ -208,16 +208,24 @@ input, select { font-family: inherit; }
 
 /* ===== LOGO PLATE (GOLDEN GLASS) ===== */
 .logo-plate {
+.logo-plate {
   display: inline-flex;
   align-items: center;
   padding: 8px 12px;
   border-radius: 12px;
-  background: linear-gradient(180deg, rgba(212,175,55,0.14), rgba(212,175,55,0.06));
-  border: 1px solid rgba(212,175,55,0.18);
-  box-shadow: 0 10px 30px rgba(212,175,55,0.08), inset 0 1px 0 rgba(255,255,255,0.25);
-  backdrop-filter: blur(6px) saturate(1.1);
+  /* solid gold look (opaque) so logo remains clearly visible */
+  background: linear-gradient(180deg, var(--cyan) 0%, var(--p500) 100%);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  backdrop-filter: none;
+  /* constrain to sidebar width to avoid overflowing into main content */
+  box-sizing: border-box;
+  max-width: calc(var(--sidebar-w) - 36px);
+  width: 100%;
+  overflow: hidden;
 }
-.logo-plate .nav-logo { height: 40px; display: block; }
+.logo-plate .nav-logo { height: 40px; display: block; filter: brightness(1.05) contrast(1.12); }
+[data-theme="dark"] .logo-plate .nav-logo { filter: none; }
 .logo-plate.logo-plate-mobile { padding: 6px 10px; border-radius: 10px; }
 .logo-plate.logo-plate-mobile .nav-logo-mobile { height: 28px; display: block; }
 
