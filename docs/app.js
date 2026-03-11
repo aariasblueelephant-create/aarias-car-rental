@@ -35,11 +35,36 @@
 
   function showToast(msg) {
     const t = q('toast');
+    if (!t) return;
     t.textContent = msg;
     t.classList.add('visible');
     setTimeout(() => t.classList.remove('visible'), 3000);
   }
   window.showToast = showToast;
+
+  /* ---- THEME TOGGLE ---- */
+  function initTheme() {
+    const isDark = localStorage.getItem('theme') === 'dark';
+    if (isDark) document.documentElement.setAttribute('data-theme', 'dark');
+    
+    const desktopBtn = q('themeToggleBtn');
+    const mobileBtn = q('themeToggleBtnMobile');
+
+    function toggleTheme() {
+      const currentDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (currentDark) {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+
+    if (desktopBtn) desktopBtn.addEventListener('click', toggleTheme);
+    if (mobileBtn) mobileBtn.addEventListener('click', toggleTheme);
+  }
+  initTheme();
 
   /* ---- TAB SWITCHING ---- */
   function switchTab(id) {

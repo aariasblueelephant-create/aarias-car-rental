@@ -12,6 +12,24 @@
   <title>Aarias Car Rental Management System</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="theme-color" content="#00f0ff"/>
+  <meta name="description" content="Aarias Car Rental Management System — Fleet scheduling, OCR plates, A5 receipts, earnings tracking."/>
+  <meta property="og:title" content="Aarias Car Rental Management"/>
+  <meta property="og:description" content="Professional car rental management with OCR, scheduling, and real-time earnings."/>
+  <meta property="og:type" content="website"/>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+  <title>Aarias Car Rental Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -22,8 +40,31 @@
 <div class="mesh-bg"></div>
 
 <nav class="sidebar" id="sidebar">
-  <div class="sidebar-brand">
+  <div class="sidebar-brand" style="display:flex; align-items:center; gap: 8px;">
     <img src="logo.svg" alt="Aarias" class="nav-logo"/>
+    <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+      <div class="theme-toggle-thumb">
+        <svg class="toggle-light-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- Sky / Background already via CSS gradient -->
+          <circle cx="35" cy="35" r="18" fill="#ffde00" filter="drop-shadow(0 0 4px #ffb300)" />
+          <!-- Mountains -->
+          <path d="M-10 110 L30 50 L60 90 L80 70 L110 110 Z" fill="#6c5ce7" opacity="0.8" />
+          <path d="M20 110 L50 60 L80 100 L110 80 L130 110 Z" fill="#0984e3" opacity="0.9" />
+        </svg>
+        <svg class="toggle-dark-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- Stars -->
+          <circle cx="20" cy="20" r="1.5" fill="#ffffff" opacity="0.8" />
+          <circle cx="70" cy="30" r="2" fill="#ffffff" opacity="0.6" />
+          <circle cx="45" cy="15" r="1" fill="#ffffff" opacity="0.9" />
+          <circle cx="85" cy="50" r="1.5" fill="#ffffff" opacity="0.5" />
+          <!-- Crescent Moon -->
+          <path d="M 60 20 A 18 18 0 1 0 75 50 A 24 24 0 1 1 60 20 Z" fill="#f1f5f9" filter="drop-shadow(0 0 5px #e2e8f0)" />
+          <!-- Mountains -->
+          <path d="M-10 110 L30 50 L60 90 L80 70 L110 110 Z" fill="#1e272e" opacity="0.9" />
+          <path d="M20 110 L50 60 L80 100 L110 80 L130 110 Z" fill="#2d3436" opacity="0.95" />
+        </svg>
+      </div>
+    </button>
   </div>
   <ul class="nav-links">
     <li class="nav-item active" data-tab="dashboard"><span class="material-icons-round">dashboard</span><span>Dashboard</span></li>
@@ -46,6 +87,24 @@
 <header class="mobile-header">
   <button class="menu-btn" id="menuBtn"><span class="material-icons-round">menu</span></button>
   <img src="logo.svg" alt="Aarias" class="nav-logo-mobile"/>
+  <button class="theme-toggle-btn" id="themeToggleBtnMobile" aria-label="Toggle Theme" style="margin-left: auto;">
+    <div class="theme-toggle-thumb">
+      <svg class="toggle-light-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="35" cy="35" r="18" fill="#ffde00" filter="drop-shadow(0 0 4px #ffb300)" />
+        <path d="M-10 110 L30 50 L60 90 L80 70 L110 110 Z" fill="#6c5ce7" opacity="0.8" />
+        <path d="M20 110 L50 60 L80 100 L110 80 L130 110 Z" fill="#0984e3" opacity="0.9" />
+      </svg>
+      <svg class="toggle-dark-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="1.5" fill="#ffffff" opacity="0.8" />
+        <circle cx="70" cy="30" r="2" fill="#ffffff" opacity="0.6" />
+        <circle cx="45" cy="15" r="1" fill="#ffffff" opacity="0.9" />
+        <circle cx="85" cy="50" r="1.5" fill="#ffffff" opacity="0.5" />
+        <path d="M 60 20 A 18 18 0 1 0 75 50 A 24 24 0 1 1 60 20 Z" fill="#f1f5f9" filter="drop-shadow(0 0 5px #e2e8f0)" />
+        <path d="M-10 110 L30 50 L60 90 L80 70 L110 110 Z" fill="#1e272e" opacity="0.9" />
+        <path d="M20 110 L50 60 L80 100 L110 80 L130 110 Z" fill="#2d3436" opacity="0.95" />
+      </svg>
+    </div>
+  </button>
 </header>
 
 <div class="page-wrap">
@@ -183,8 +242,6 @@
     </div>
   </section>
 
-  <!-- EARNINGS -->
-  
   <!-- MAP -->
   <section class="tab-panel" id="tab-map">
     <div class="page-header glass-card"><h2><span class="material-icons-round">map</span>&nbsp;Live Map</h2><p class="muted">Heatmap of pickups and cluster playback across the Bay Area.</p></div>
@@ -198,12 +255,13 @@
     </div>
   </section>
 
+  <!-- EARNINGS -->
   <section class="tab-panel" id="tab-earnings">
     <div class="page-header glass-card"><h2><span class="material-icons-round">trending_up</span>&nbsp;Earnings &amp; Payments</h2></div>
     <div class="kpi-grid">
       <div class="kpi glass-card"><div class="kpi-icon" style="background:linear-gradient(135deg,#00f0ff,#7b61ff)"><span class="material-icons-round">account_balance_wallet</span></div><div><div class="kpi-val" id="earningsMonthly">$0</div><div class="kpi-label">This Month</div></div></div>
       <div class="kpi glass-card"><div class="kpi-icon" style="background:linear-gradient(135deg,#39ff14,#00c9a7)"><span class="material-icons-round">receipt_long</span></div><div><div class="kpi-val" id="earningsRentals">0</div><div class="kpi-label">Total Rentals</div></div></div>
-      <div class="kpi glass-card"><div class="kpi-icon" style="background:linear-gradient(135deg,#ffc800,#ffaa00)"><span class="material-icons-round">supervisor_account</span></div><div><div class="kpi-val" id="earningsCommission">$0</div><div class="kpi-label">Agent Commission</div></div></div>
+      <div class="kpi glass-card"><div class="kpi-icon" style="background:linear-gradient(135deg,#ffc800,#ffaa00)'><span class="material-icons-round">supervisor_account</span></div><div><div class="kpi-val" id="earningsCommission">$0</div><div class="kpi-label">Agent Commission</div></div></div>
     </div>
     <div class="glass-card mt-20"><h3>Monthly Revenue</h3><canvas id="earningsChart" height="200"></canvas></div>
     <div class="glass-card mt-20">
@@ -243,30 +301,57 @@
     </div>
   </section>
 
-  <!-- COMING SOON -->
+  <!-- COMING SOON / TODO -->
   <section class="tab-panel" id="tab-coming-soon">
     <div class="page-header glass-card"><h2><span class="material-icons-round">bolt</span>&nbsp;AI Automation &amp; Sync</h2></div>
-    <div class="coming-grid">
-      <div class="glass-card coming-card"><span class="material-icons-round cs-icon">smart_toy</span><h3>AI Automation</h3><p>Auto check-in/check-out, availability checks, and reminders. Rolling out once more users join!</p><span class="pill-badge orange">Coming Soon</span></div>
-      <div class="glass-card coming-card"><span class="material-icons-round cs-icon">sync</span><h3>App Sync (Turo etc.)</h3><p>Sync bookings with Turo and other rental platforms to prevent cross-app double bookings.</p><span class="pill-badge orange">Coming Soon</span></div>
-      <div class="glass-card coming-card"><span class="material-icons-round cs-icon">notifications_active</span><h3>Reminders &amp; Alerts</h3><p>Push/email notifications for pickups, drop-offs, and maintenance schedules.</p><span class="pill-badge orange">Coming Soon</span></div>
+
+    <div class="glass-card mt-10">
+      <h3>Planned AI &amp; Sync Features</h3>
+      <p class="muted">Planned items for future development — prioritized as quick wins first.</p>
+      <ol class="ai-todo" style="margin-top:12px; padding-left:18px;">
+        <li><strong>Realtime admin sync</strong> — push booking/create/update/delete events to all open admin clients (WebSockets).</li>
+        <li><strong>Offline client sync</strong> — local queue (IndexedDB) with retry and background sync when online.</li>
+        <li><strong>Two-way calendar sync</strong> — ICS export and optional Google Calendar integration (OAuth) for bookings.</li>
+        <li><strong>OCR auto-fill</strong> — improve license/ID parsing and auto-populate rental forms client-side or via server endpoint.</li>
+        <li><strong>Email/SMS notifications</strong> — confirmations, reminders, and alerts (SMTP/Twilio integration).</li>
+        <li><strong>Scheduled reminders</strong> — cron/job-queue driven reminders for pickups, returns, and maintenance.</li>
+        <li><strong>Admin chat assistant</strong> — an assistant that answers questions about bookings, fleet, and policies (LLM proxy).</li>
+        <li><strong>Auto-tagging &amp; scoring</strong> — heuristic or ML-based risk scoring and automatic tagging of bookings.</li>
+        <li><strong>Dynamic pricing suggestions</strong> — demand-aware price recommendations and seasonal rules.</li>
+        <li><strong>Booking conflict detection</strong> — detection, alerts, and guided resolution for overlapping requests.</li>
+        <li><strong>Background job queue</strong> — reliable worker queue for async tasks (emails, sync jobs, exports).</li>
+        <li><strong>Live vehicle tracking</strong> — show vehicle positions on the map (WebSocket/MQTT ingest).</li>
+        <li><strong>Fleet telemetry ingest</strong> — ingest and store vehicle telemetry for analytics and geofencing.</li>
+        <li><strong>Channel connectors &amp; reconciliation</strong> — adapters for Turo, Expedia, etc., with reconciliation logic.</li>
+        <li><strong>Webhooks &amp; public API</strong> — allow external systems to receive booking events and push bookings in.</li>
+        <li><strong>Import/export (CSV, ICS)</strong> — bulk import/export for bookings, customers, and calendar feeds.</li>
+        <li><strong>Audit logs &amp; versioning</strong> — record changes and allow simple rollback/conflict resolution.</li>
+        <li><strong>Offline-first mobile support</strong> — mobile web app with local-first UX and sync recovery.</li>
+        <li><strong>Push notifications (web/mobile)</strong> — browser push and mobile notifications for urgent alerts.</li>
+        <li><strong>Sync conflict resolution UI</strong> — a small UI for administrators to review and resolve sync conflicts.</li>
+      </ol>
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn-pill-ghost" onclick="showToast('Prioritize features via the repo TODOs')">Prioritize</button>
+        <button class="btn-pill" onclick="showToast('Exporting TODOs — feature coming')">Export TODOs</button>
+      </div>
     </div>
   </section>
 
 </div>
-    <!-- FULLSCREEN MAP OVERLAY -->
-    <div id="mapOverlay" class="map-overlay" aria-hidden="true">
-      <div class="map-overlay-inner">
-        <button id="closeMapOverlay" class="map-close"><span class="material-icons-round">close</span></button>
-        <div id="mapFull"></div>
-        <div id="mapOverlayControls" style="position:absolute; top:12px; right:12px; z-index:5000; display:flex; gap:8px;">
-          <label class="map-toggle"><input type="checkbox" id="heatToggleFull" checked/> Heatmap</label>
-          <label class="map-toggle"><input type="checkbox" id="clusterToggleFull" checked/> Clusters</label>
-        </div>
+
+  <!-- FULLSCREEN MAP OVERLAY -->
+  <div id="mapOverlay" class="map-overlay" aria-hidden="true">
+    <div class="map-overlay-inner">
+      <button id="closeMapOverlay" class="map-close"><span class="material-icons-round">close</span></button>
+      <div id="mapFull"></div>
+      <div id="mapOverlayControls" style="position:absolute; top:12px; right:12px; z-index:5000; display:flex; gap:8px;">
+        <label class="map-toggle"><input type="checkbox" id="heatToggleFull" checked/> Heatmap</label>
+        <label class="map-toggle"><input type="checkbox" id="clusterToggleFull" checked/> Clusters</label>
       </div>
     </div>
+  </div>
 
-    <div id="toast" class="toast"></div>
+  <div id="toast" class="toast"></div>
 <script src="https://unpkg.com/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
